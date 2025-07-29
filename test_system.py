@@ -193,6 +193,49 @@ def test_system_modules():
     
     return len(failed_modules) == 0
 
+def test_model_prediction():
+    """Test model predictions using sample landmark data"""
+    print("\nTesting trained model on sample landmarks...")
+
+    sample_file = os.path.join('tests', 'sample_landmarks.json')
+    if not os.path.exists(sample_file):
+        print(f"✗ Sample landmarks not found: {sample_file}")
+        print("  See tests/README.md for details.")
+        return False
+
+    try:
+        import json
+        import numpy as np
+        from sklearn.linear_model import LogisticRegression
+
+        with open(sample_file, 'r') as f:
+            samples = json.load(f)
+
+        X = [s['landmarks'] for s in samples]
+        y_labels = [s['label'] for s in samples]
+
+        label_to_idx = {lbl: idx for idx, lbl in enumerate(sorted(set(y_labels)))}
+        y = [label_to_idx[lbl] for lbl in y_labels]
+
+        model = LogisticRegression(max_iter=200)
+        model.fit(X, y)
+
+        success = True
+        for sample in samples:
+            pred_idx = model.predict([sample['landmarks']])[0]
+            pred_label = [lbl for lbl, idx in label_to_idx.items() if idx == pred_idx][0]
+            if pred_label == sample['label']:
+                print(f"✓ {sample['label']} predicted correctly")
+            else:
+                print(f"✗ Expected {sample['label']}, got {pred_label}")
+                success = False
+
+        return success
+
+    except Exception as e:
+        print(f"✗ Model prediction test failed: {e}")
+        return False
+
 def run_comprehensive_test():
     """Run all tests"""
     print("=" * 50)
@@ -205,7 +248,8 @@ def run_comprehensive_test():
         ("MediaPipe Hand Detection", test_mediapipe),
         ("TensorFlow Model Creation", test_tensorflow),
         ("File Structure", test_files),
-        ("System Modules", test_system_modules)
+        ("System Modules", test_system_modules),
+        ("Model Prediction", test_model_prediction)
     ]
     
     results = []
