@@ -6,6 +6,9 @@ import json
 from datetime import datetime
 import threading
 import time
+from tensorflow import keras
+import joblib
+import argparse
 
 class HandSignTrainer:
     def __init__(self):
@@ -45,6 +48,94 @@ class HandSignTrainer:
         for landmark in hand_landmarks.landmark:
             features.extend([landmark.x, landmark.y, landmark.z])
         return features
+
+    def load_dataset(self, dataset_path):
+        """Load dataset of images or landmark json files"""
+        features = []
+        labels = []
+
+        for label in sorted(os.listdir(dataset_path)):
+            label_dir = os.path.join(dataset_path, label)
+            if not os.path.isdir(label_dir):
+                continue
+
+            for fname in os.listdir(label_dir):
+                fpath = os.path.join(label_dir, fname)
+                sample_features = None
+
+                if fname.lower().endswith((".png", ".jpg", ".jpeg", ".bmp")):
+                    img = cv2.imread(fpath)
+                    if img is None:
+                        continue
+                    rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    results = self.hands.process(rgb_img)
+                    if results.multi_hand_landmarks:
+                        sample_features = self.extract_hand_features(
+                            results.multi_hand_landmarks[0]
+                        )
+                elif fname.lower().endswith(".json"):
+                    try:
+                        with open(fpath, "r") as f:
+                            data = json.load(f)
+                        if "features" in data:
+                            sample_features = data["features"]
+                        elif "landmarks" in data:
+                            lm = []
+                            for point in data["landmarks"]:
+                                if isinstance(point, dict):
+                                    lm.extend(
+                                        [
+                                            point.get("x", 0),
+                                            point.get("y", 0),
+                                            point.get("z", 0),
+                                        ]
+                                    )
+                                else:
+                                    lm.extend(point)
+                            sample_features = lm
+                    except Exception:
+                        continue
+
+                if sample_features is None or len(sample_features) != 63:
+                    continue
+
+                features.append(sample_features)
+                labels.append(label.upper())
+
+        return np.array(features, dtype=np.float32), np.array(labels)
+
+    def train_from_dataset(self, dataset_path):
+        """Train model from dataset located at dataset_path"""
+        X, y = self.load_dataset(dataset_path)
+        if len(X) == 0:
+            print("No valid training data found in dataset")
+            return
+
+        unique_labels = sorted(set(y))
+        self.label_encoder = {lbl: idx for idx, lbl in enumerate(unique_labels)}
+        y_encoded = np.array([self.label_encoder[lbl] for lbl in y])
+
+        self.model = keras.Sequential(
+            [
+                keras.layers.Input(shape=(63,)),
+                keras.layers.Dense(128, activation="relu"),
+                keras.layers.Dropout(0.3),
+                keras.layers.Dense(64, activation="relu"),
+                keras.layers.Dropout(0.3),
+                keras.layers.Dense(len(unique_labels), activation="softmax"),
+            ]
+        )
+
+        self.model.compile(
+            optimizer="adam",
+            loss="sparse_categorical_crossentropy",
+            metrics=["accuracy"],
+        )
+
+        self.model.fit(X, y_encoded, epochs=20, batch_size=32, validation_split=0.2)
+        self.model.save("hand_sign_model.h5")
+        joblib.dump(self.label_encoder, "label_encoder.pkl")
+        print("Model trained and saved to hand_sign_model.h5")
     
     def collect_samples(self, sign_name):
         """Collect training samples for a specific sign"""
@@ -153,8 +244,20 @@ class HandSignTrainer:
                 print("Invalid command. Use 'collect <sign>', 'list', 'delete <sign>', or 'quit'")
 
 def main():
+    parser = argparse.ArgumentParser(description="Hand sign trainer")
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        help="Path to dataset folder containing subfolders of images or landmark JSON files",
+    )
+    args = parser.parse_args()
+
     trainer = HandSignTrainer()
-    trainer.interactive_training()
+
+    if args.dataset:
+        trainer.train_from_dataset(args.dataset)
+    else:
+        trainer.interactive_training()
 
 if __name__ == "__main__":
     main() 
