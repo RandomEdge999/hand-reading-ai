@@ -204,10 +204,14 @@ class SimpleHandSignRecognition:
     
     def run_recognition(self):
         """Main recognition loop"""
-        cap = cv2.VideoCapture(0)
-        
-        if not cap.isOpened():
-            print("Error: Could not open webcam")
+        try:
+            cap = cv2.VideoCapture(0)
+            if not cap.isOpened():
+                raise RuntimeError("Could not open webcam")
+        except Exception as e:
+            print("Camera Error:", e)
+            print("Hints: ensure drivers are installed, check camera permissions, "
+                  "close other applications and try a different camera index")
             return
         
         print("Simple Hand Sign Recognition System Started!")

@@ -139,14 +139,18 @@ class HandSignDemo:
         cap = None
         
         for idx in camera_indices:
-            cap = cv2.VideoCapture(idx)
-            if cap.isOpened():
-                print(f"Camera opened successfully with index {idx}")
-                break
+            try:
+                cap = cv2.VideoCapture(idx)
+                if cap.isOpened():
+                    print(f"Camera opened successfully with index {idx}")
+                    break
+            except Exception:
+                cap = None
         
         if not cap or not cap.isOpened():
-            print("Error: Could not open any camera")
-            print("Please check your webcam connection and permissions")
+            print("Camera Error: Could not open any camera")
+            print("Hints: ensure webcam drivers are installed, check permissions, "
+                  "close other applications and try different indices")
             return
         
         print("Hand Sign Recognition Demo Started!")
