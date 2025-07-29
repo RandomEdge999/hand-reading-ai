@@ -73,6 +73,23 @@ A comprehensive AI-powered hand sign recognition system that uses your webcam to
    python train_model.py
    ```
 
+   You can also train directly from a dataset by providing its path:
+   ```bash
+   python train_model.py --dataset path/to/dataset
+   ```
+   The dataset directory should contain one subfolder per sign label with
+   either image files or JSON landmark files.
+
+   Example structure:
+   ```
+   dataset/
+     A/  # samples for sign "A"
+       image1.jpg
+       sample2.json
+     B/
+       ...
+   ```
+
 2. **Collect training data**
    - Use command: `collect <sign_name>`
    - Hold your hand in the desired position
