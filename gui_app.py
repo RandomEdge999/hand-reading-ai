@@ -8,6 +8,9 @@ import numpy as np
 import json
 import os
 from datetime import datetime
+from tensorflow import keras
+import joblib
+from hand_sign_recognition import HandSignRecognition
 
 class HandSignGUI:
     def __init__(self, root):
@@ -26,7 +29,23 @@ class HandSignGUI:
         self.current_text = ""
         self.recognition_history = []
         self.custom_signs = {}
-        
+
+        # Load ML model and label encoder
+        try:
+            self.model = keras.models.load_model('hand_sign_model.h5')
+            self.label_encoder = joblib.load('label_encoder.pkl')
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load model: {e}")
+            self.model = None
+            self.label_encoder = None
+
+        # Initialize recognizer using loaded model
+        self.recognizer = HandSignRecognition()
+        if self.model is not None:
+            self.recognizer.model = self.model
+        if self.label_encoder is not None:
+            self.recognizer.label_encoder = self.label_encoder
+
         # Load custom signs
         self.load_custom_signs()
         
@@ -186,10 +205,14 @@ class HandSignGUI:
             self.root.after(30, self.update_video)
     
     def predict_sign_simple(self, hand_landmarks):
-        """Simple sign prediction (placeholder for actual ML model)"""
-        # This is a simplified version - in practice, you'd use your trained model
-        # For now, we'll just return a placeholder
-        return None
+        """Predict hand sign using the loaded recognition model"""
+        if hand_landmarks is None:
+            return None
+        try:
+            return self.recognizer.predict_sign(hand_landmarks)
+        except Exception as e:
+            self.status_label.config(text=f"Prediction error: {e}")
+            return None
     
     def clear_text(self):
         """Clear the recognized text"""
