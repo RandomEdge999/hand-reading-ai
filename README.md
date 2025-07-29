@@ -186,6 +186,9 @@ The system uses a simple neural network that can be enhanced:
    - Check webcam permissions
    - Try different camera index (change `cv2.VideoCapture(0)` to `cv2.VideoCapture(1)`)
    - Ensure no other application is using the camera
+   - Install or update webcam drivers
+   - On Windows/macOS, verify camera privacy settings
+   - If the application shows a "Camera Error" message, review these hints
 
 2. **Poor recognition accuracy**
    - Ensure good lighting conditions

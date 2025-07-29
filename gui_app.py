@@ -106,9 +106,20 @@ class HandSignGUI:
     
     def start_video(self):
         """Start video capture thread"""
-        self.cap = cv2.VideoCapture(0)
-        if not self.cap.isOpened():
-            messagebox.showerror("Error", "Could not open webcam")
+        try:
+            self.cap = cv2.VideoCapture(0)
+            if not self.cap.isOpened():
+                raise RuntimeError("Could not open webcam")
+        except Exception as e:
+            hint = (
+                "Failed to access the camera.\n\n"
+                "Troubleshooting tips:\n"
+                "- Ensure webcam drivers are installed and up to date\n"
+                "- Check camera permissions\n"
+                "- Close other applications using the camera\n"
+                "- Try a different camera index"
+            )
+            messagebox.showerror("Camera Error", f"{e}\n\n{hint}")
             return
         
         self.is_running = True

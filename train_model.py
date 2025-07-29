@@ -145,10 +145,14 @@ class HandSignTrainer:
         if sign_name not in self.training_data:
             self.training_data[sign_name] = []
         
-        cap = cv2.VideoCapture(0)
-        
-        if not cap.isOpened():
-            print("Error: Could not open webcam")
+        try:
+            cap = cv2.VideoCapture(0)
+            if not cap.isOpened():
+                raise RuntimeError("Could not open webcam")
+        except Exception as e:
+            print("Camera Error:", e)
+            print("Hints: ensure drivers are installed, check camera permissions, "
+                  "close other applications and try a different camera index")
             return
         
         print(f"Collecting samples for sign '{sign_name}'")
