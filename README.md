@@ -32,6 +32,7 @@ A comprehensive AI-powered hand sign recognition system that uses your webcam to
 - Python 3.8 or higher
 - Webcam
 - Windows 10/11 (tested on Windows 10)
+- `libGL.so.1` required by OpenCV (install via `sudo apt-get install libgl1` on Debian/Ubuntu)
 
 ### Setup Instructions
 
