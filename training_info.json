@@ -1,0 +1,28 @@
+{
+  "training_date": "2025-07-31T11:07:57.644916",
+  "num_samples": 18,
+  "num_classes": 18,
+  "classes": [
+    "B",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "NOTHING",
+    "O",
+    "P",
+    "Q",
+    "S",
+    "SPACE",
+    "T",
+    "W",
+    "Y"
+  ],
+  "feature_count": 88,
+  "xgb_accuracy": 1.0,
+  "rf_accuracy": 1.0
+}

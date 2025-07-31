@@ -1,45 +1,47 @@
-# Hand Sign Recognition System
+# Advanced Hand Sign Recognition System
 
-A comprehensive AI-powered hand sign recognition system that uses your webcam to interpret hand gestures and convert them to text. The system supports basic American Sign Language (ASL), custom hand symbols, and machine learning capabilities for continuous improvement.
+A powerful, local AI-powered hand sign recognition system that uses your webcam to interpret hand gestures and convert them to text. The system runs entirely on your local machine using advanced machine learning models and MediaPipe's robust hand tracking.
 
-## Features
+## 🚀 Key Features
 
-### 🎯 Core Features
+### 🎯 Core Capabilities
 - **Real-time hand sign recognition** using webcam input
-- **Text output display** below the video feed
-- **Basic ASL support** for letters A-Z and numbers 0-9
-- **Custom hand symbol learning** - teach the system new signs
-- **Local AI processing** - runs entirely on your laptop
-- **Modern GUI interface** with intuitive controls
+- **Local AI processing** - runs entirely on your laptop, no internet required
+- **Advanced MediaPipe hand tracking** with 21 3D landmarks
+- **XGBoost + Random Forest ensemble models** for superior accuracy
+- **High-resolution camera support** (1280x720)
+- **Confidence scoring** for reliable predictions
 
-### 🧠 AI & Learning Capabilities
-- **Neural network-based recognition** using TensorFlow
-- **MediaPipe hand tracking** for precise landmark detection
-- **Training data collection** for custom signs
-- **Model persistence** - saves learned patterns
-- **Continuous learning** from user interactions
+### 🧠 Advanced AI & Learning
+- **Ensemble machine learning** using XGBoost and Random Forest
+- **Advanced feature extraction** including finger lengths, angles, and hand geometry
+- **Prediction smoothing** with confidence-based filtering
+- **Custom sign learning** - teach the system new gestures
+- **Model persistence** - saves learned patterns locally
+- **Real-time model training** capabilities
 
-### 🎨 User Interface
-- **Beautiful GUI** built with tkinter
+### 🎨 Modern User Interface
+- **Beautiful dark-themed GUI** built with tkinter
 - **Real-time video display** with hand landmark visualization
-- **Text recognition history** tracking
+- **Live confidence display** showing prediction reliability
+- **Text recognition history** with timestamps
 - **Export functionality** for recognized text
-- **Training interface** for adding new signs
+- **Custom sign management** interface
 
-## Installation
+## 🛠️ Installation
 
 ### Prerequisites
 - Python 3.8 or higher
 - Webcam
 - Windows 10/11 (tested on Windows 10)
-- `libGL.so.1` required by OpenCV (install via `sudo apt-get install libgl1` on Debian/Ubuntu)
+- 4GB+ RAM recommended
 
-### Setup Instructions
+### Quick Setup
 
 1. **Clone or download the project**
    ```bash
    git clone <repository-url>
-   cd hand_reading_AI
+   cd hand-reading-ai
    ```
 
 2. **Install dependencies**
@@ -47,160 +49,162 @@ A comprehensive AI-powered hand sign recognition system that uses your webcam to
    pip install -r requirements.txt
    ```
 
-3. **Verify installation**
+3. **Test the system**
    ```bash
-   python -c "import cv2, mediapipe, tensorflow; print('All dependencies installed successfully!')"
+   python test_advanced_system.py
    ```
 
-## Usage
+## 🚀 Usage
 
 ### Quick Start
 
-1. **Run the main application**
+1. **Launch the advanced system**
    ```bash
-   python hand_sign_recognition.py
+   python advanced_launcher.py
    ```
 
-2. **Use the GUI version (recommended)**
+2. **Or run the GUI directly**
    ```bash
-   python gui_app.py
+   python advanced_gui_app.py
    ```
 
-### Training Custom Signs
-
-1. **Start the training system**
+3. **For command line version**
    ```bash
-   python train_model.py
+   python advanced_hand_recognition.py
    ```
 
-   You can also train directly from a dataset by providing its path:
-   ```bash
-   python train_model.py --dataset path/to/dataset
-   ```
-   The dataset directory should contain one subfolder per sign label with
-   either image files or JSON landmark files.
-
-   Example structure:
-   ```
-   dataset/
-     A/  # samples for sign "A"
-       image1.jpg
-       sample2.json
-     B/
-       ...
-   ```
-
-2. **Collect training data**
-   - Use command: `collect <sign_name>`
-   - Hold your hand in the desired position
-   - Press 's' to save samples (collect 50 samples per sign)
-   - Press 'q' to quit collection
-
-3. **Manage your signs**
-   - `list` - View all trained signs
-   - `delete <sign_name>` - Remove a sign
-   - `quit` - Exit training
-
-### GUI Controls
+### System Controls
 
 - **Clear Text** - Clear the recognized text
 - **Save Custom Sign** - Save current hand position as a new sign
-- **Train Model** - Open training interface
-- **View History** - See recognition history
+- **Train Model** - Retrain models with collected data
+- **View History** - See recognition history with confidence scores
 - **Export Text** - Save recognized text to file
+- **Settings** - Adjust confidence threshold and other parameters
 
-## System Architecture
+## 🏗️ System Architecture
 
-### Components
+### Advanced Components
 
-1. **Hand Detection** (`mediapipe`)
-   - Real-time hand landmark detection
+1. **MediaPipe Hand Detection**
    - 21 3D landmarks per hand
-   - Robust tracking with confidence scores
+   - High confidence thresholds (0.8 detection, 0.7 tracking)
+   - Support for multiple hands
+   - Complex model for better accuracy
 
-2. **Feature Extraction**
-   - Converts landmarks to feature vectors
-   - Normalized coordinates (x, y, z)
-   - 63-dimensional feature space
+2. **Advanced Feature Extraction**
+   - Basic landmark coordinates (63 features)
+   - Hand size metrics (width, height, depth)
+   - Finger length calculations
+   - Palm center coordinates
+   - Inter-finger angles
+   - Total: 100+ advanced features
 
-3. **Neural Network Model**
-   - Input: 21 landmarks × 3 coordinates = 63 features
-   - Hidden layers: 128 → 64 neurons
-   - Output: 36 classes (26 letters + 10 numbers)
-   - Activation: ReLU with dropout for regularization
+3. **Ensemble Machine Learning**
+   - **XGBoost Classifier**: 200 estimators, optimized parameters
+   - **Random Forest**: 150 estimators, robust backup model
+   - **Ensemble Decision**: Uses highest confidence prediction
+   - **Feature Scaling**: StandardScaler for normalization
 
-4. **Learning System**
-   - Custom sign storage
-   - Training data collection
-   - Model retraining capabilities
+4. **Prediction Pipeline**
+   - Real-time feature extraction
+   - Model ensemble prediction
+   - Confidence-based filtering
+   - Prediction smoothing buffer
+   - Text accumulation with history
 
 ### File Structure
 
 ```
-hand_reading_AI/
-├── hand_sign_recognition.py    # Main recognition application
-├── gui_app.py                  # GUI version
-├── train_model.py              # Training system
-├── requirements.txt            # Dependencies
-├── README.md                   # This file
-├── hand_sign_model.h5          # Trained model (created after first run)
-├── label_encoder.pkl           # Label mappings (created after first run)
-├── custom_signs.json           # Custom signs database
-└── training_data.json          # Training data collection
+hand-reading-ai/
+├── advanced_hand_recognition.py    # Main recognition engine
+├── advanced_gui_app.py             # Advanced GUI application
+├── advanced_launcher.py            # System launcher
+├── test_advanced_system.py         # Comprehensive testing
+├── requirements.txt                # Dependencies
+├── config.py                       # Configuration settings
+├── README.md                       # This file
+├── advanced_xgb_model.pkl          # XGBoost model (created after first run)
+├── advanced_rf_model.pkl           # Random Forest model
+├── advanced_scaler.pkl             # Feature scaler
+├── advanced_label_encoder.pkl      # Label mappings
+├── advanced_custom_signs.json      # Custom signs database
+└── training_data.json              # Training data collection
 ```
 
-## Customization
+## 🎯 Supported Signs
 
-### Adding New Signs
+### ASL Alphabet (A-Z)
+- **A**: Thumb out, fingers closed
+- **B**: All fingers extended, thumb tucked
+- **C**: Curved hand like letter C
+- **D**: Index finger up, others closed
+- **E**: All fingers closed, thumb across palm
+- **F**: Index and thumb touching, other fingers up
+- **G**: Index finger pointing
+- **H**: Index and middle finger extended
+- **I**: Pinky finger up, others closed
+- **J**: Pinky finger moving in J motion
+- **K**: Index and middle finger up, thumb between
+- **L**: Thumb and index finger forming L
+- **M**: Three fingers down, thumb tucked
+- **N**: Two fingers down, thumb tucked
+- **O**: All fingers curved together
+- **P**: Index finger pointing down
+- **Q**: Index finger pointing down, thumb out
+- **R**: Index and middle finger crossed
+- **S**: Fist with thumb over fingers
+- **T**: Index finger up, thumb touching middle
+- **U**: Index and middle finger together up
+- **V**: Index and middle finger apart up
+- **W**: Three fingers up (thumb, index, middle)
+- **X**: Index finger bent
+- **Y**: Thumb and pinky out
+- **Z**: Index finger moving in Z motion
 
-1. **Through GUI**
-   - Position your hand in the desired gesture
-   - Click "Save Custom Sign"
-   - Enter a name for the sign
+### Numbers (0-9)
+- All standard ASL number signs
 
-2. **Through Training System**
-   - Run `python train_model.py`
-   - Use `collect <sign_name>` command
-   - Collect multiple samples for better accuracy
+### Special Signs
+- **SPACE**: Open palm facing forward
+- **DELETE**: Closed fist
+- **ENTER**: Thumbs up
 
-### Model Training
+## ⚙️ Configuration
 
-The system uses a simple neural network that can be enhanced:
+### Performance Settings
+- **Confidence Threshold**: 0.85 (adjustable in GUI)
+- **Prediction Delay**: 1.0 seconds between predictions
+- **Buffer Size**: 5 predictions for smoothing
+- **Camera Resolution**: 1280x720 (configurable)
 
-1. **Architecture modifications** - Edit `create_initial_model()` in `hand_sign_recognition.py`
-2. **Feature engineering** - Modify `extract_hand_features()` for better features
-3. **Data augmentation** - Add rotation, scaling, and noise to training data
+### Model Settings
+- **XGBoost**: 200 estimators, max depth 8
+- **Random Forest**: 150 estimators, max depth 10
+- **Feature Scaling**: StandardScaler normalization
+- **Ensemble Weighting**: Confidence-based selection
 
-### Performance Optimization
-
-- **Reduce model complexity** for faster inference
-- **Adjust MediaPipe confidence thresholds** for better detection
-- **Use GPU acceleration** with TensorFlow-GPU
-- **Optimize video resolution** for your hardware
-
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### Common Issues
 
-1. **Webcam not detected**
-   - Check webcam permissions
+1. **Camera not detected**
+   - Check webcam permissions in Windows settings
    - Try different camera index (change `cv2.VideoCapture(0)` to `cv2.VideoCapture(1)`)
    - Ensure no other application is using the camera
-   - Install or update webcam drivers
-   - On Windows/macOS, verify camera privacy settings
-   - If the application shows a "Camera Error" message, review these hints
+   - Update webcam drivers
 
 2. **Poor recognition accuracy**
    - Ensure good lighting conditions
    - Keep hand clearly visible in frame
-   - Collect more training samples
-   - Adjust hand position to match ASL standards
+   - Adjust confidence threshold in settings
+   - Train custom signs for better accuracy
 
 3. **Performance issues**
-   - Reduce video resolution
+   - Reduce camera resolution in config
    - Close other applications
-   - Use lower MediaPipe confidence thresholds
-   - Consider using a lighter model architecture
+   - Lower confidence threshold
+   - Use command line version for better performance
 
 4. **Dependencies installation errors**
    - Update pip: `python -m pip install --upgrade pip`
@@ -214,14 +218,32 @@ The system uses a simple neural network that can be enhanced:
 - **GPU**: Optional but recommended for better performance
 - **Storage**: 2GB free space for models and data
 
-## Future Enhancements
+## 🚀 Advanced Features
+
+### Custom Sign Training
+1. Show your hand in the desired position
+2. Click "Save Custom Sign" in the GUI
+3. Enter a name for the sign
+4. The system will learn and recognize this sign
+
+### Model Training
+- Collect multiple samples of each sign
+- Use the "Train Model" button to retrain
+- Models automatically save and improve over time
+
+### Export and History
+- Export recognized text to files
+- View detailed recognition history
+- Track confidence scores over time
+
+## 🔮 Future Enhancements
 
 ### Planned Features
 - **Multi-hand support** for complex gestures
 - **Dynamic gesture recognition** (moving hands)
 - **Voice output** for recognized signs
 - **Mobile app version**
-- **Cloud-based model sharing**
+- **Cloud model sharing** (optional)
 - **Advanced ASL grammar support**
 
 ### Technical Improvements
@@ -231,7 +253,7 @@ The system uses a simple neural network that can be enhanced:
 - **Web-based interface**
 - **API for third-party integration**
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -239,17 +261,34 @@ The system uses a simple neural network that can be enhanced:
 4. Add tests if applicable
 5. Submit a pull request
 
-## License
+## 📄 License
 
 This project is open source and available under the MIT License.
 
-## Support
+## 🆘 Support
 
 For issues, questions, or contributions:
 - Create an issue on GitHub
 - Check the troubleshooting section
 - Review the documentation
+- Run `python test_advanced_system.py` for diagnostics
 
 ---
 
-**Note**: This system is designed for educational and accessibility purposes. For professional ASL interpretation, please consult certified interpreters and appropriate resources. 
+**Note**: This system is designed for educational and accessibility purposes. For professional ASL interpretation, please consult certified interpreters and appropriate resources.
+
+## 🎉 Quick Start Commands
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Test the system
+python test_advanced_system.py
+
+# Launch the system
+python advanced_launcher.py
+
+# Or run GUI directly
+python advanced_gui_app.py
+``` 

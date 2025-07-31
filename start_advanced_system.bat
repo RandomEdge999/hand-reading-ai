@@ -1,9 +1,9 @@
 @echo off
 echo ========================================
-echo Hand Sign Recognition System
+echo Advanced Hand Sign Recognition System
 echo ========================================
 echo.
-echo Starting the system launcher...
+echo Starting the advanced system launcher...
 echo.
 
 REM Check if Python is installed
@@ -15,11 +15,11 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM Check if requirements are installed
-echo Checking dependencies...
-python -c "import cv2, mediapipe, tensorflow" >nul 2>&1
+REM Check if advanced dependencies are installed
+echo Checking advanced dependencies...
+python -c "import cv2, mediapipe, xgboost, sklearn" >nul 2>&1
 if errorlevel 1 (
-    echo Installing dependencies...
+    echo Installing advanced dependencies...
     pip install -r requirements.txt
     if errorlevel 1 (
         echo ERROR: Failed to install dependencies
@@ -28,8 +28,8 @@ if errorlevel 1 (
     )
 )
 
-REM Start the launcher
-echo Starting system launcher...
-python run_system.py
+REM Start the working launcher
+echo Starting working system launcher...
+python working_launcher.py
 
 pause 
