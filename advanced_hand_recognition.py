@@ -39,6 +39,7 @@ class AdvancedHandSignRecognition:
         self.current_text = ""
         self.recognition_history = []
         self.custom_signs = {}
+        self.custom_sign_threshold = 5.0  # distance threshold for custom signs
         self.confidence_threshold = 0.85
         self.prediction_buffer = []
         self.buffer_size = 5
@@ -239,13 +240,18 @@ class AdvancedHandSignRecognition:
         else:
             prediction = rf_pred
             confidence = rf_proba
-        
+
         # Convert prediction back to label
         try:
             predicted_label = self.label_encoder.inverse_transform([prediction])[0]
-        except:
+        except Exception:
             predicted_label = None
-        
+
+        # Check custom signs and override if closer
+        custom_pred, custom_conf = self.predict_custom_sign(features_scaled[0])
+        if custom_pred and custom_conf > confidence:
+            return custom_pred, custom_conf
+
         return predicted_label, confidence
     
     def add_custom_sign(self, sign_name, hand_landmarks):
@@ -255,7 +261,11 @@ class AdvancedHandSignRecognition:
         
         features = self.extract_advanced_features(hand_landmarks)
         if features is not None:
-            self.custom_signs[sign_name] = features.tolist()
+            scaled = self.scaler.transform(features.reshape(1, -1))[0].tolist()
+            self.custom_signs[sign_name] = {
+                'raw': features.tolist(),
+                'scaled': scaled
+            }
             self.save_custom_signs()
             return True
         return False
@@ -263,13 +273,41 @@ class AdvancedHandSignRecognition:
     def save_custom_signs(self):
         """Save custom signs to file"""
         with open('advanced_custom_signs.json', 'w') as f:
-            json.dump(self.custom_signs, f)
+            json.dump(self.custom_signs, f, indent=2)
     
     def load_custom_signs(self):
         """Load custom signs from file"""
         if os.path.exists('advanced_custom_signs.json'):
             with open('advanced_custom_signs.json', 'r') as f:
-                self.custom_signs = json.load(f)
+                data = json.load(f)
+                # Support legacy format where features were stored as a list
+                for name, value in data.items():
+                    if isinstance(value, dict):
+                        self.custom_signs[name] = value
+                    else:
+                        scaled = self.scaler.transform(np.array(value).reshape(1, -1))[0].tolist()
+                        self.custom_signs[name] = {
+                            'raw': value,
+                            'scaled': scaled
+                        }
+
+    def predict_custom_sign(self, scaled_features):
+        """Predict custom sign using nearest neighbour search"""
+        if not self.custom_signs:
+            return None, 0.0
+
+        distances = []
+        for name, feat_dict in self.custom_signs.items():
+            feat = np.array(feat_dict['scaled'])
+            dist = np.linalg.norm(scaled_features - feat)
+            distances.append((name, dist))
+
+        sign_name, dist = min(distances, key=lambda x: x[1])
+        if dist > self.custom_sign_threshold:
+            return None, 0.0
+
+        confidence = max(0.0, 1 - dist / self.custom_sign_threshold)
+        return sign_name, confidence
     
     def update_prediction_buffer(self, prediction, confidence):
         """Update prediction buffer for smoothing"""
@@ -422,4 +460,4 @@ def main():
     recognizer.run_recognition()
 
 if __name__ == "__main__":
-    main() 
+    main()
